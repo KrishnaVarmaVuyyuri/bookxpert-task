@@ -22,9 +22,16 @@ export default function Dashboard() {
   const [gender, setGender] = useState("");
   const [status, setStatus] = useState("");
 
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    initializeEmployees();
-    setEmployees(getEmployees());
+    // simulate async load
+    setLoading(true);
+    setTimeout(() => {
+      initializeEmployees();
+      setEmployees(getEmployees());
+      setLoading(false);
+    }, 500);
   }, []);
 
   const updateEmployee = (updatedEmp) => {
@@ -33,6 +40,9 @@ export default function Dashboard() {
     );
     setEmployees(updatedList);
     saveEmployees(updatedList);
+
+    // simulate async response
+    return new Promise((res) => setTimeout(res, 300));
   };
 
 
@@ -40,6 +50,8 @@ export default function Dashboard() {
     const updatedList = employees.filter((emp) => emp.id !== id);
     setEmployees(updatedList);
     saveEmployees(updatedList);
+
+    return new Promise((res) => setTimeout(res, 300));
   };
 
   const handleSave = (employee) => {
@@ -60,6 +72,8 @@ export default function Dashboard() {
     saveEmployees(updatedList);
     setShowForm(false);
     setEditingEmployee(null);
+
+    return new Promise((res) => setTimeout(res, 400));
   };
 
   const filteredEmployees = employees.filter((emp) => {
@@ -109,7 +123,7 @@ export default function Dashboard() {
 
 
 
-      <EmployeeSummary employees={employees} />
+      <EmployeeSummary employees={employees} loading={loading} />
 
       <EmployeeFilter
         search={search}
@@ -118,6 +132,7 @@ export default function Dashboard() {
         onSearchChange={setSearch}
         onGenderChange={setGender}
         onStatusChange={setStatus}
+        loading={loading}
       />
 
       <EmployeeTable
@@ -125,6 +140,7 @@ export default function Dashboard() {
         onUpdate={updateEmployee}
         onDelete={deleteEmployee}
         onEdit={(emp) => { setEditingEmployee(emp); setShowForm(true); }}
+        loading={loading}
       />
     </div>
   );

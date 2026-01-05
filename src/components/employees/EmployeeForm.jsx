@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Spinner from "../Spinner";
 
 const statesList = [
   "Telangana",
@@ -21,6 +22,8 @@ export default function EmployeeForm({ onSave, onCancel, initialData }) {
   const [preview, setPreview] = useState("");
   const [imageFile, setImageFile] = useState(null);
   const [errors, setErrors] = useState({});
+  const [imageLoading, setImageLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   // Prefill form for EDIT
   useEffect(() => {
@@ -89,11 +92,15 @@ export default function EmployeeForm({ onSave, onCancel, initialData }) {
         return;
       }
 
+      setImageLoading(true);
       const imageURL = URL.createObjectURL(file);
       setPreview(imageURL);
       setForm({ ...form, profileImage: imageURL });
       setImageFile(file);
       setErrors((prev) => ({ ...prev, profileImage: "" }));
+
+      // simulate processing time so spinner is visible
+      setTimeout(() => setImageLoading(false), 250);
     }
   };
 
@@ -111,11 +118,17 @@ export default function EmployeeForm({ onSave, onCancel, initialData }) {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
 
-    onSave(form);
+    setSubmitting(true);
+    try {
+      const res = onSave(form);
+      if (res && res.then) await res;
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -249,6 +262,11 @@ export default function EmployeeForm({ onSave, onCancel, initialData }) {
                   alt="Preview"
                   className="w-20 h-20 rounded-full object-cover border-4 border-indigo-100 shadow-md"
                 />
+                {imageLoading && (
+                  <div className="absolute inset-0 rounded-full bg-white bg-opacity-60 flex items-center justify-center">
+                    <Spinner size={6} />
+                  </div>
+                )}
                 <div className="absolute inset-0 bg-black bg-opacity-40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                   <span className="text-white text-xs">Change</span>
                 </div>
@@ -307,9 +325,17 @@ export default function EmployeeForm({ onSave, onCancel, initialData }) {
       <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex gap-3 rounded-b-xl">
         <button
           onClick={handleSubmit}
-          className="flex-1 bg-indigo-600 text-white font-semibold px-5 py-2.5 rounded-lg hover:from-indigo-700 hover:to-purple-700 focus:ring-4 focus:ring-indigo-200 transition-all shadow-md hover:shadow-lg cursor-pointer"
+          disabled={submitting}
+          className={`flex-1 bg-indigo-600 text-white font-semibold px-5 py-2.5 rounded-lg hover:from-indigo-700 hover:to-purple-700 focus:ring-4 focus:ring-indigo-200 transition-all shadow-md hover:shadow-lg cursor-pointer ${submitting ? 'opacity-70 pointer-events-none' : ''}`}
         >
-          Save Employee
+          {submitting ? (
+            <div className="flex items-center justify-center gap-2">
+              <Spinner size={4} />
+              <span>Saving…</span>
+            </div>
+          ) : (
+            'Save Employee'
+          )}
         </button>
         <button
           onClick={onCancel}
