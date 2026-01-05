@@ -19,6 +19,7 @@ export default function EmployeeForm({ onSave, onCancel, initialData }) {
   });
 
   const [preview, setPreview] = useState("");
+  const [imageFile, setImageFile] = useState(null);
   const [errors, setErrors] = useState({});
 
   // Prefill form for EDIT
@@ -26,6 +27,7 @@ export default function EmployeeForm({ onSave, onCancel, initialData }) {
     if (initialData) {
       setForm(initialData);
       setPreview(initialData.profileImage);
+      setImageFile(null);
     }
   }, [initialData]);
 
@@ -37,22 +39,73 @@ export default function EmployeeForm({ onSave, onCancel, initialData }) {
     });
   };
 
+  const validateField = (name, value) => {
+    switch (name) {
+      case "fullName":
+        if (!value.trim()) return "Name is required";
+        if (value.trim().length < 3) return "Name must be at least 3 characters";
+        return "";
+      case "gender":
+        if (!value) return "Gender is required";
+        return "";
+      case "dob":
+        if (!value) return "DOB is required";
+        const d = new Date(value);
+        const today = new Date();
+        if (d > today) return "DOB cannot be in the future";
+        return "";
+      case "state":
+        if (!value) return "State is required";
+        return "";
+      case "profileImage":
+        if (imageFile) {
+          if (!imageFile.type.startsWith("image/")) return "Invalid image file";
+          const max = 2 * 1024 * 1024; // 2MB
+          if (imageFile.size > max) return "Image must be less than 2MB";
+        }
+        return "";
+      default:
+        return "";
+    }
+  };
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    const err = validateField(name, value);
+    setErrors((prev) => ({ ...prev, [name]: err }));
+  };
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      if (!file.type.startsWith("image/")) {
+        setErrors((prev) => ({ ...prev, profileImage: "Invalid image file" }));
+        return;
+      }
+
+      const max = 2 * 1024 * 1024; // 2MB
+      if (file.size > max) {
+        setErrors((prev) => ({ ...prev, profileImage: "Image must be less than 2MB" }));
+        return;
+      }
+
       const imageURL = URL.createObjectURL(file);
       setPreview(imageURL);
       setForm({ ...form, profileImage: imageURL });
+      setImageFile(file);
+      setErrors((prev) => ({ ...prev, profileImage: "" }));
     }
   };
 
   const validate = () => {
+    const fields = ["fullName", "gender", "dob", "state", "profileImage"];
     const newErrors = {};
 
-    if (!form.fullName.trim()) newErrors.fullName = "Name is required";
-    if (!form.gender) newErrors.gender = "Gender is required";
-    if (!form.dob) newErrors.dob = "DOB is required";
-    if (!form.state) newErrors.state = "State is required";
+    fields.forEach((f) => {
+      const val = f === "profileImage" ? form.profileImage : form[f];
+      const err = validateField(f, val);
+      if (err) newErrors[f] = err;
+    });
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -72,37 +125,43 @@ export default function EmployeeForm({ onSave, onCancel, initialData }) {
       {/* Full Name */}
       <input
         type="text"
+        id="fullName"
         name="fullName"
-        placeholder="Full Name"
+        placeholder="Full Name*"
         value={form.fullName}
         onChange={handleChange}
-        className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        onBlur={handleBlur}
+        aria-invalid={!!errors.fullName}
+        aria-describedby={errors.fullName ? "fullName-error" : undefined}
+        className={`w-full px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 ${errors.fullName ? 'border-red-500' : 'border-gray-300'}`}
       />
-      {errors.fullName && <span className="text-sm text-red-600">{errors.fullName}</span>}
+      {errors.fullName && <span id="fullName-error" className="text-sm text-red-600">{errors.fullName}</span> }
 
       {/* Gender */}
-      <select name="gender" value={form.gender} onChange={handleChange} className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none">
-        <option value="">Select Gender</option>
+      <select id="gender" name="gender" value={form.gender} onChange={handleChange} onBlur={handleBlur} aria-invalid={!!errors.gender} aria-describedby={errors.gender ? "gender-error" : undefined} className={`w-full px-4 py-2 rounded focus:outline-none ${errors.gender ? 'border-red-500' : 'border-gray-300'}`}>
+        <option value="">Select Gender*</option>
         <option>Male</option>
         <option>Female</option>
       </select>
-      {errors.gender && <span className="text-sm text-red-600">{errors.gender}</span>}
+      {errors.gender && <span id="gender-error" className="text-sm text-red-600">{errors.gender}</span> }
 
       {/* DOB */}
-      <input type="date" name="dob" value={form.dob} onChange={handleChange} className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none" />
-      {errors.dob && <span className="text-sm text-red-600">{errors.dob}</span>}
+      <input id="dob" type="date" name="dob" value={form.dob} onChange={handleChange} onBlur={handleBlur} aria-invalid={!!errors.dob} aria-describedby={errors.dob ? "dob-error" : undefined} className={`w-full px-4 py-2 rounded focus:outline-none ${errors.dob ? 'border-red-500' : 'border-gray-300'}`} />
+      {errors.dob && <span id="dob-error" className="text-sm text-red-600">{errors.dob}</span>}
 
       {/* State */}
-      <select name="state" value={form.state} onChange={handleChange} className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none">
-        <option value="">Select State</option>
+      <select id="state" name="state" value={form.state} onChange={handleChange} onBlur={handleBlur} aria-invalid={!!errors.state} aria-describedby={errors.state ? "state-error" : undefined} className={`w-full px-4 py-2 rounded focus:outline-none ${errors.state ? 'border-red-500' : 'border-gray-300'}`}>
+        <option value="">Select State*</option>
         {statesList.map((st) => (
           <option key={st}>{st}</option>
         ))}
       </select>
-      {errors.state && <span className="text-sm text-red-600">{errors.state}</span>}
+      {errors.state && <span id="state-error" className="text-sm text-red-600">{errors.state}</span>}
 
       {/* Image Upload */}
-      <input type="file" accept="image/*" onChange={handleImageChange} className="text-sm text-gray-700" />
+      <label>Upload Profile Image</label>
+      <input id="profileImage" type="file" accept="image/*" onChange={handleImageChange} className="text-sm text-gray-700 border border-dotted rounded p-2 cursor-pointer" aria-describedby={errors.profileImage ? 'profileImage-error' : undefined} />
+      {errors.profileImage && <span id="profileImage-error" className="text-sm text-red-600">{errors.profileImage}</span>}
 
       {preview && (
         <img src={preview} alt="Preview" className="w-20 h-20 rounded-full object-cover mx-auto" />
