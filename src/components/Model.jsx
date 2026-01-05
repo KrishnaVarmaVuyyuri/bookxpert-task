@@ -1,30 +1,17 @@
 export default function Modal({ children, onClose }) {
   return (
-    <div style={styles.overlay} onClick={onClose}>
-      <div style={styles.modal} onClick={(e) => e.stopPropagation()}>
+    <div 
+      className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50 p-0 sm:p-4" 
+      onClick={onClose}
+    >
+      <div 
+        className="bg-white rounded-t-xl shadow-2xl w-full h-[85vh] overflow-y-auto modal-scroll sm:rounded-xl sm:shadow-2xl sm:w-full sm:max-w-2xl sm:h-auto sm:max-h-[90vh]" 
+        onClick={(e) => e.stopPropagation()} 
+        role="dialog" 
+        aria-modal="true"
+      >
         {children}
       </div>
     </div>
   );
 }
-
-const styles = {
-  overlay: {
-    position: "fixed",
-    top: 0,
-    left: 0,
-    width: "100vw",
-    height: "100vh",
-    background: "rgba(0,0,0,0.5)",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    zIndex: 1000
-  },
-  modal: {
-    background: "#fff",
-    padding: "20px",
-    borderRadius: "8px",
-    minWidth: "420px"
-  }
-};

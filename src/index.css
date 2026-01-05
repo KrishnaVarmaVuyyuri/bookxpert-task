@@ -2,3 +2,12 @@
 body {
   font-family: 'Jost', sans-serif;
 }
+
+/* Hide scrollbar but keep scroll behavior for modal content */
+.modal-scroll {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+.modal-scroll::-webkit-scrollbar {
+  display: none; /* Safari and Chrome */
+}

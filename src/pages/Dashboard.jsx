@@ -4,6 +4,7 @@ import EmployeeTable from "../components/employees/EmployeeTable";
 import EmployeeForm from "../components/employees/EmployeeForm";
 import Modal from "../components/Model";
 import { generateEmployeeId } from "../utils/idGenerator";
+import EmployeeFilter from "../components/employees/EmployeeFilter";
 import {
   getEmployees,
   saveEmployees,
@@ -15,6 +16,11 @@ export default function Dashboard() {
 
   const [showForm, setShowForm] = useState(false);
   const [editingEmployee, setEditingEmployee] = useState(null);
+
+
+  const [search, setSearch] = useState("");
+  const [gender, setGender] = useState("");
+  const [status, setStatus] = useState("");
 
   useEffect(() => {
     initializeEmployees();
@@ -36,31 +42,49 @@ export default function Dashboard() {
     saveEmployees(updatedList);
   };
 
-const handleSave = (employee) => {
-  let updatedList;
+  const handleSave = (employee) => {
+    let updatedList;
 
-  if (editingEmployee) {
-    updatedList = employees.map((emp) =>
-      emp.id === editingEmployee.id
-        ? { ...employee, id: emp.id }
-        : emp
-    );
-  } else {
-    const newId = generateEmployeeId(employees);
-    updatedList = [...employees, { ...employee, id: newId }];
-  }
+    if (editingEmployee) {
+      updatedList = employees.map((emp) =>
+        emp.id === editingEmployee.id
+          ? { ...employee, id: emp.id }
+          : emp
+      );
+    } else {
+      const newId = generateEmployeeId(employees);
+      updatedList = [...employees, { ...employee, id: newId }];
+    }
 
-  setEmployees(updatedList);
-  saveEmployees(updatedList);
-  setShowForm(false);
-  setEditingEmployee(null);
-};
+    setEmployees(updatedList);
+    saveEmployees(updatedList);
+    setShowForm(false);
+    setEditingEmployee(null);
+  };
+
+  const filteredEmployees = employees.filter((emp) => {
+    const matchesName = emp.fullName
+      .toLowerCase()
+      .includes(search.toLowerCase());
+
+    const matchesGender = gender ? emp.gender === gender : true;
+
+    const matchesStatus =
+      status === "active"
+        ? emp.isActive
+        : status === "inactive"
+          ? !emp.isActive
+          : true;
+
+    return matchesName && matchesGender && matchesStatus;
+  });
+
 
   return (
     <div className="p-6">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-3">
         <h1 className="text-2xl font-semibold">Employee Management Dashboard</h1>
-        <button onClick={() => setShowForm(true)} className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition">
+        <button onClick={() => setShowForm(true)} className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition cursor-pointer w-full sm:w-auto">
           Add Employee
         </button>
       </div>
@@ -87,8 +111,17 @@ const handleSave = (employee) => {
 
       <EmployeeSummary employees={employees} />
 
+      <EmployeeFilter
+        search={search}
+        gender={gender}
+        status={status}
+        onSearchChange={setSearch}
+        onGenderChange={setGender}
+        onStatusChange={setStatus}
+      />
+
       <EmployeeTable
-        employees={employees}
+        employees={filteredEmployees}
         onUpdate={updateEmployee}
         onDelete={deleteEmployee}
         onEdit={(emp) => { setEditingEmployee(emp); setShowForm(true); }}

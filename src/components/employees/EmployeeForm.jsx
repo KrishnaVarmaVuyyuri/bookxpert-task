@@ -119,72 +119,206 @@ export default function EmployeeForm({ onSave, onCancel, initialData }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-md p-6 border border-gray-200 rounded-md bg-white flex flex-col gap-3">
-      <h2 className="text-xl font-semibold mb-2">{initialData ? "Edit Employee" : "Add Employee"}</h2>
+    <div className="bg-white rounded-xl">
+     
 
-      {/* Full Name */}
-      <input
-        type="text"
-        id="fullName"
-        name="fullName"
-        placeholder="Full Name*"
-        value={form.fullName}
-        onChange={handleChange}
-        onBlur={handleBlur}
-        aria-invalid={!!errors.fullName}
-        aria-describedby={errors.fullName ? "fullName-error" : undefined}
-        className={`w-full px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 ${errors.fullName ? 'border-red-500' : 'border-gray-300'}`}
-      />
-      {errors.fullName && <span id="fullName-error" className="text-sm text-red-600">{errors.fullName}</span> }
+      {/* Form Content */}
+      <div className="px-6 py-5 space-y-4">
+        {/* Full Name */}
+        <div className="space-y-1.5">
+          <label htmlFor="fullName" className="block text-sm font-medium text-gray-700">
+            Full Name <span className="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            id="fullName"
+            name="fullName"
+            placeholder="Enter full name"
+            value={form.fullName}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            className={`w-full px-3 py-2 rounded-lg border transition-all ${
+              errors.fullName
+                ? 'border-red-300 focus:border-red-500 focus:ring-2 focus:ring-red-200'
+                : 'border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100'
+            } outline-none`}
+          />
+          {errors.fullName && (
+            <p className="text-xs text-red-600 flex items-center gap-1">
+              <span>⚠</span> {errors.fullName}
+            </p>
+          )}
+        </div>
 
-      {/* Gender */}
-      <select id="gender" name="gender" value={form.gender} onChange={handleChange} onBlur={handleBlur} aria-invalid={!!errors.gender} aria-describedby={errors.gender ? "gender-error" : undefined} className={`w-full px-4 py-2 rounded focus:outline-none ${errors.gender ? 'border-red-500' : 'border-gray-300'}`}>
-        <option value="">Select Gender*</option>
-        <option>Male</option>
-        <option>Female</option>
-      </select>
-      {errors.gender && <span id="gender-error" className="text-sm text-red-600">{errors.gender}</span> }
+        {/* Gender and DOB Row */}
+        <div className="grid grid-cols-2 gap-4">
+          {/* Gender */}
+          <div className="space-y-1.5">
+            <label htmlFor="gender" className="block text-sm font-medium text-gray-700">
+              Gender <span className="text-red-500">*</span>
+            </label>
+            <select
+              id="gender"
+              name="gender"
+              value={form.gender}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              className={`w-full px-3 py-2 rounded-lg border transition-all ${
+                errors.gender
+                  ? 'border-red-300 focus:border-red-500 focus:ring-2 focus:ring-red-200'
+                  : 'border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100'
+              } outline-none bg-white cursor-pointer`}
+            >
+              <option value="">Select Gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+            </select>
+            {errors.gender && (
+              <p className="text-xs text-red-600 flex items-center gap-1">
+                <span>⚠</span> {errors.gender}
+              </p>
+            )}
+          </div>
 
-      {/* DOB */}
-      <input id="dob" type="date" name="dob" value={form.dob} onChange={handleChange} onBlur={handleBlur} aria-invalid={!!errors.dob} aria-describedby={errors.dob ? "dob-error" : undefined} className={`w-full px-4 py-2 rounded focus:outline-none ${errors.dob ? 'border-red-500' : 'border-gray-300'}`} />
-      {errors.dob && <span id="dob-error" className="text-sm text-red-600">{errors.dob}</span>}
+          {/* Date of Birth */}
+          <div className="space-y-1.5">
+            <label htmlFor="dob" className="block text-sm font-medium text-gray-700">
+              Date of Birth <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="date"
+              id="dob"
+              name="dob"
+              value={form.dob}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              className={`w-full px-3 py-2 rounded-lg border transition-all ${
+                errors.dob
+                  ? 'border-red-300 focus:border-red-500 focus:ring-2 focus:ring-red-200'
+                  : 'border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100'
+              } outline-none cursor-pointer`}
+            />
+            {errors.dob && (
+              <p className="text-xs text-red-600 flex items-center gap-1">
+                <span>⚠</span> {errors.dob}
+              </p>
+            )}
+          </div>
+        </div>
 
-      {/* State */}
-      <select id="state" name="state" value={form.state} onChange={handleChange} onBlur={handleBlur} aria-invalid={!!errors.state} aria-describedby={errors.state ? "state-error" : undefined} className={`w-full px-4 py-2 rounded focus:outline-none ${errors.state ? 'border-red-500' : 'border-gray-300'}`}>
-        <option value="">Select State*</option>
-        {statesList.map((st) => (
-          <option key={st}>{st}</option>
-        ))}
-      </select>
-      {errors.state && <span id="state-error" className="text-sm text-red-600">{errors.state}</span>}
+        {/* State */}
+        <div className="space-y-1.5">
+          <label htmlFor="state" className="block text-sm font-medium text-gray-700">
+            State <span className="text-red-500">*</span>
+          </label>
+          <select
+            id="state"
+            name="state"
+            value={form.state}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            className={`w-full px-3 py-2 rounded-lg border transition-all ${
+              errors.state
+                ? 'border-red-300 focus:border-red-500 focus:ring-2 focus:ring-red-200'
+                : 'border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100'
+            } outline-none bg-white cursor-pointer`}
+          >
+            <option value="">Select State</option>
+            {statesList.map((st) => (
+              <option key={st} value={st}>{st}</option>
+            ))}
+          </select>
+          {errors.state && (
+            <p className="text-xs text-red-600 flex items-center gap-1">
+              <span>⚠</span> {errors.state}
+            </p>
+          )}
+        </div>
 
-      {/* Image Upload */}
-      <label>Upload Profile Image</label>
-      <input id="profileImage" type="file" accept="image/*" onChange={handleImageChange} className="text-sm text-gray-700 border border-dotted rounded p-2 cursor-pointer" aria-describedby={errors.profileImage ? 'profileImage-error' : undefined} />
-      {errors.profileImage && <span id="profileImage-error" className="text-sm text-red-600">{errors.profileImage}</span>}
+        {/* Profile Image Upload */}
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-gray-700">
+            Profile Image
+          </label>
 
-      {preview && (
-        <img src={preview} alt="Preview" className="w-20 h-20 rounded-full object-cover mx-auto" />
-      )}
+          <div className="flex items-center gap-4">
+            {preview ? (
+              <div className="relative group">
+                <img
+                  src={preview}
+                  alt="Preview"
+                  className="w-20 h-20 rounded-full object-cover border-4 border-indigo-100 shadow-md"
+                />
+                <div className="absolute inset-0 bg-black bg-opacity-40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <span className="text-white text-xs">Change</span>
+                </div>
+              </div>
+            ) : (
+              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 border-2 border-dashed border-gray-300 flex items-center justify-center">
+                <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+              </div>
+            )}
 
-      {/* Status */}
-      <label className="flex items-center gap-2">
-        <input
-          type="checkbox"
-          name="isActive"
-          checked={form.isActive}
-          onChange={handleChange}
-          className="h-4 w-4 text-indigo-600 border-gray-300 rounded"
-        />
-        <span>Active</span>
-      </label>
+            <label className="flex-1">
+              <input
+                type="file"
+                id="profileImage"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="hidden"
+              />
+              <div className="px-4 py-2.5 bg-gradient-to-r from-indigo-50 to-purple-50 border-2 border-indigo-200 border-dashed rounded-lg cursor-pointer hover:border-indigo-400 hover:bg-indigo-100 transition-all text-center">
+                <span className="text-sm font-medium text-indigo-700">Choose File</span>
+                <p className="text-xs text-gray-500 mt-0.5">PNG, JPG up to 2MB</p>
+              </div>
+            </label>
+          </div>
+          {errors.profileImage && (
+            <p className="text-xs text-red-600 flex items-center gap-1">
+              <span>⚠</span> {errors.profileImage}
+            </p>
+          )}
+        </div>
 
-      {/* Actions */}
-      <div className="flex gap-3 mt-3">
-        <button type="submit" className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">Save</button>
-        <button type="button" onClick={onCancel} className="bg-gray-100 px-4 py-2 rounded hover:bg-gray-200">Cancel</button>
+        {/* Active Status */}
+        <div className="pt-1">
+          <label className="flex items-center gap-3 cursor-pointer group">
+            <div className="relative">
+              <input
+                type="checkbox"
+                name="isActive"
+                checked={form.isActive}
+                onChange={handleChange}
+                className="sr-only peer"
+              />
+              <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-indigo-500 transition-all"></div>
+              <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-5 shadow-sm"></div>
+            </div>
+            <span className="text-sm font-medium text-gray-700 group-hover:text-indigo-600 transition-colors">
+              Active Status
+            </span>
+          </label>
+        </div>
       </div>
-    </form>
+
+      {/* Footer Buttons */}
+      <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex gap-3 rounded-b-xl">
+        <button
+          onClick={handleSubmit}
+          className="flex-1 bg-indigo-600 text-white font-semibold px-5 py-2.5 rounded-lg hover:from-indigo-700 hover:to-purple-700 focus:ring-4 focus:ring-indigo-200 transition-all shadow-md hover:shadow-lg cursor-pointer"
+        >
+          Save Employee
+        </button>
+        <button
+          onClick={onCancel}
+          className="px-5 py-2.5 bg-white border-2 border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 hover:border-gray-400 focus:ring-4 focus:ring-gray-100 transition-all cursor-pointer"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
   );
 }
 
